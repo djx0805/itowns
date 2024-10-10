@@ -77,7 +77,7 @@ function computeTime(distance) {
 }
 
 /**
- * @classdesc Camera controls that can follow a path.
+ * Camera controls that can follow a path.
  * It is used to simulate a street view.
  * It stores a currentPosition and nextPosition, and do a camera traveling to go to next position.
  * It also manages picking on the ground and on other object, like building.
@@ -111,7 +111,6 @@ function computeTime(distance) {
  */
 class StreetControls extends FirstPersonControls {
     /**
-     * @constructor
      * @param { View } view - View where this control will be used
      * @param { Object } options - Configuration of this controls
      * @param { number } [options.wallMaxDistance=1000] - Maximum distance to click on a wall, in meter.
@@ -300,7 +299,7 @@ class StreetControls extends FirstPersonControls {
         startQuaternion.copy(this.camera.quaternion);
         this.end.copy(this.camera);
         this.end.lookAt(position);
-        this.tween = new TWEEN.Tween({ t: 0 }, this.tweenGroup).to({ t: 1 }, time)
+        this.tween = new TWEEN.Tween({ t: 0 }).to({ t: 1 }, time)
             .easing(TWEEN.Easing.Quadratic.Out)
             .onComplete(() => {
                 this.stopAnimations();
@@ -310,6 +309,8 @@ class StreetControls extends FirstPersonControls {
                 this.camera.quaternion.slerpQuaternions(startQuaternion, this.end.quaternion, d.t);
             })
             .start();
+
+        this.tweenGroup.add(this.tween);
 
         this.animationFrameRequester = () => {
             this.tweenGroup.update();
@@ -341,7 +342,7 @@ class StreetControls extends FirstPersonControls {
 
         this.stopAnimations();
 
-        this.tween = new TWEEN.Tween(this.camera.position, this.tweenGroup) // Create a new tween that modifies camera position
+        this.tween = new TWEEN.Tween(this.camera.position) // Create a new tween that modifies camera position
             .to(position.clone(), time)
             .easing(TWEEN.Easing.Quadratic.Out) // Use an easing function to make the animation smooth.
             .onComplete(() => {
@@ -349,6 +350,8 @@ class StreetControls extends FirstPersonControls {
                 resolve();
             })
             .start();
+
+        this.tweenGroup.add(this.tween);
 
         this.animationFrameRequester = () => {
             this.tweenGroup.update();
@@ -365,6 +368,7 @@ class StreetControls extends FirstPersonControls {
         if (this.tween) {
             this.tween.stop();
             this.tween = undefined;
+            this.tweenGroup.removeAll();
         }
         if (this.animationFrameRequester) {
             this.view.removeFrameRequester(MAIN_LOOP_EVENTS.BEFORE_RENDER, this.animationFrameRequester);

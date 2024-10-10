@@ -1,11 +1,11 @@
 import * as THREE from 'three';
 import CRS from 'Core/Geographic/Crs';
 import { geoidLayerIsVisible } from 'Layer/GeoidLayer';
+import { tiledCovering } from 'Core/Tile/Tile';
 
 /**
  * A TileMesh is a THREE.Mesh with a geometricError and an OBB
  * The objectId property of the material is the with the id of the TileMesh
- * @constructor
  * @param {TileGeometry} geometry - the tile geometry
  * @param {THREE.Material} material - a THREE.Material compatible with THREE.Mesh
  * @param {Layer} layer - the layer the tile is added to
@@ -34,7 +34,7 @@ class TileMesh extends THREE.Mesh {
         this.obb.box3D.getBoundingSphere(this.boundingSphere);
 
         for (const tms of layer.tileMatrixSets) {
-            this.#_tms.set(tms, this.extent.tiledCovering(tms));
+            this.#_tms.set(tms, tiledCovering(this.extent, tms));
         }
 
         this.frustumCulled = false;

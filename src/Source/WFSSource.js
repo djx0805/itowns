@@ -1,11 +1,13 @@
 import Source from 'Source/Source';
 import URLBuilder from 'Provider/URLBuilder';
 import CRS from 'Core/Geographic/Crs';
+import Extent from 'Core/Geographic/Extent';
+
+const _extent = new Extent('EPSG:4326', [0, 0, 0, 0]);
 
 /**
- * @classdesc
  * An object defining the source of resources to get from a
- * [WFS]{@link http://www.opengeospatial.org/standards/wfs} server. It inherits
+ * [WFS](http://www.opengeospatial.org/standards/wfs) server. It inherits
  * from {@link Source}.
  *
  * @extends Source
@@ -101,8 +103,6 @@ class WFSSource extends Source {
      * @param {Object} source - An object that can contain all properties of a
      * WFSSource and {@link Source}. `url`, `typeName` and `crs` are
      * mandatory.
-     *
-     * @constructor
      */
     constructor(source) {
         if (source.projection) {
@@ -169,7 +169,10 @@ class WFSSource extends Source {
         }
     }
 
-    urlFromExtent(extent) {
+    urlFromExtent(extentOrTile) {
+        const extent = extentOrTile.isExtent ?
+            extentOrTile.as(this.crs, _extent) :
+            extentOrTile.toExtent(this.crs, _extent);
         return URLBuilder.bbox(extent, this);
     }
 

@@ -195,12 +195,12 @@ function jsonFeaturesToFeatures(crsIn, jsonFeatures, options) {
  */
 export default {
     /**
-     * Parse a GeoJSON file content and return a [FeatureCollection]{@link FeatureCollection}.
+     * Parse a GeoJSON file content and return a {@link FeatureCollection}.
      *
      * @param {string} json - The GeoJSON file content to parse.
      * @param {ParsingOptions} options - Options controlling the parsing.
 
-     * @return {Promise} A promise resolving with a [FeatureCollection]{@link FeatureCollection}.
+     * @return {Promise} A promise resolving with a {@link FeatureCollection}.
      */
     parse(json, options = {}) {
         options = deprecatedParsingOptionsToNewOne(options);
@@ -217,7 +217,9 @@ export default {
 
         if (out.filteringExtent) {
             if (typeof out.filteringExtent == 'boolean') {
-                out.filterExtent = options.extent.as(_in.crs);
+                out.filterExtent = options.extent.isExtent ?
+                    options.extent.as(_in.crs) :
+                    options.extent.toExtent(_in.crs);
             } else if (out.filteringExtent.isExtent) {
                 out.filterExtent = out.filteringExtent;
             }

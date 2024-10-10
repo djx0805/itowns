@@ -134,7 +134,6 @@ class PointCloudLayer extends GeometryLayer {
      * Constructs a new instance of a Point Cloud Layer. This should not be used
      * directly, but rather implemented using `extends`.
      *
-     * @constructor
      * @extends GeometryLayer
      *
      * @param {string} id - The id of the layer, that should be unique. It is
@@ -253,7 +252,8 @@ class PointCloudLayer extends GeometryLayer {
         }
 
         elt.notVisibleSince = undefined;
-        point.copy(context.camera.camera3D.position).sub(this.object3d.position);
+        point.copy(context.camera.camera3D.position).sub(this.object3d.getWorldPosition(new THREE.Vector3()));
+        point.applyQuaternion(this.object3d.getWorldQuaternion(new THREE.Quaternion()).invert());
 
         // only load geometry if this elements has points
         if (elt.numPoints !== 0) {

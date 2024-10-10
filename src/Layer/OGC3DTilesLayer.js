@@ -114,8 +114,6 @@ class OGC3DTilesLayer extends GeometryLayer {
      * Layer for [3D Tiles](https://www.ogc.org/standard/3dtiles/) datasets.
      * @extends Layer
      *
-     * @constructor
-     *
      * @param {String} id - unique layer id.
      * @param {Object} config - layer specific configuration
      * @param {OGC3DTilesSource} config.source - data source configuration
@@ -128,8 +126,8 @@ class OGC3DTilesLayer extends GeometryLayer {
      * @param {String} [config.pntsSizeMode= PNTS_SIZE_MODE.VALUE] {@link PointsMaterial} Point cloud size mode (passed to {@link PointsMaterial}).
      * Only 'VALUE' or 'ATTENUATED' are possible. VALUE use constant size, ATTENUATED compute size depending on distance
      * from point to camera.
-     * @param {Number} [config.pntsMinAttenuatedSize=3] Minimum scale used by 'ATTENUATED' size mode.
-     * @param {Number} [config.pntsMaxAttenuatedSize=10] Maximum scale used by 'ATTENUATED' size mode.
+     * @param {Number} [config.pntsMinAttenuatedSize=1] Minimum scale used by 'ATTENUATED' size mode.
+     * @param {Number} [config.pntsMaxAttenuatedSize=7] Maximum scale used by 'ATTENUATED' size mode.
      */
     constructor(id, config) {
         super(id, new THREE.Group(), { source: config.source });
@@ -142,10 +140,12 @@ class OGC3DTilesLayer extends GeometryLayer {
             this.tilesRenderer.registerPlugin(new CesiumIonAuthPlugin({
                 apiToken: config.source.accessToken,
                 assetId: config.source.assetId,
+                autoRefreshToken: true,
             }));
         } else if (config.source.isOGC3DTilesGoogleSource) {
             this.tilesRenderer.registerPlugin(new GoogleCloudAuthPlugin({
                 apiToken: config.source.key,
+                autoRefreshToken: true,
             }));
         }
         this.tilesRenderer.registerPlugin(new ImplicitTilingPlugin());
@@ -186,8 +186,8 @@ class OGC3DTilesLayer extends GeometryLayer {
         this.pntsShape = config.pntsShape ?? PNTS_SHAPE.CIRCLE;
         this.classification = config.classification ?? ClassificationScheme.DEFAULT;
         this.pntsSizeMode = config.pntsSizeMode ?? PNTS_SIZE_MODE.VALUE;
-        this.pntsMinAttenuatedSize = config.pntsMinAttenuatedSize || 3;
-        this.pntsMaxAttenuatedSize = config.pntsMaxAttenuatedSize || 10;
+        this.pntsMinAttenuatedSize = config.pntsMinAttenuatedSize || 1;
+        this.pntsMaxAttenuatedSize = config.pntsMaxAttenuatedSize || 7;
     }
 
     /**
@@ -294,7 +294,7 @@ class OGC3DTilesLayer extends GeometryLayer {
 
         // Setup classification bufferAttribute
         if (model.isPoints) {
-            const classificationData = batchTable?.getData('Classification');
+            const classificationData = batchTable?.getPropertyArray('Classification');
             if (classificationData) {
                 geometry.setAttribute('classification',
                     new THREE.BufferAttribute(classificationData, 1),
@@ -303,7 +303,8 @@ class OGC3DTilesLayer extends GeometryLayer {
         }
     }
 
-    preUpdate() {
+    preUpdate(context) {
+        this.scale = context.camera._preSSE;
         this.tilesRenderer.update();
         return null; // don't return any element because 3d-tiles-renderer already updates them
     }

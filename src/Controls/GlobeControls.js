@@ -180,6 +180,8 @@ let previous;
  * @property      {boolean} enableDamping Enable damping or not (simulates the lag that a real camera
  * operator introduces while operating a heavy physical camera). Default is true.
  * @property      {boolean} dampingMoveFactor the damping move factor. Default is 0.25.
+ * @property      {StateControl~State} stateControl redefining which controls state is triggered by the keyboard/mouse
+ * event (For example, rewrite the PAN movement to be triggered with the 'left' mouseButton instead of 'right').
  */
 class GlobeControls extends THREE.EventDispatcher {
     constructor(view, placement, options = {}) {
@@ -189,7 +191,7 @@ class GlobeControls extends THREE.EventDispatcher {
         this.camera = view.camera3D;
 
         // State control
-        this.states = new StateControl(this.view);
+        this.states = new StateControl(this.view, options.stateControl);
 
         // this.enabled property has moved to StateControl
         Object.defineProperty(this, 'enabled', {
@@ -1137,11 +1139,11 @@ class GlobeControls extends THREE.EventDispatcher {
      * Zoom parameter is ignored if range is set
      * The tilt's interval is between 4 and 89.5 degree
      *
-     * @param      {CameraUtils~CameraTransformOptions|Extent}   params camera transformation to apply
-     * @param      {number}   [params.zoom]   zoom
-     * @param      {number}   [params.scale]   scale
-     * @param      {boolean}  isAnimated  Indicates if animated
-     * @return     {Promise}  A promise that resolves when transformation is complete
+     * @param {CameraUtils~CameraTransformOptions|Extent} [params] - camera transformation to apply
+     * @param {number} [params.zoom] - zoom
+     * @param {number} [params.scale] - scale
+     * @param {boolean} [isAnimated] - Indicates if animated
+     * @return {Promise} A promise that resolves when transformation is complete
      */
     lookAtCoordinate(params = {}, isAnimated = this.isAnimationEnabled()) {
         this.player.stop();

@@ -21,7 +21,6 @@ function mergeCollections(collections) {
 }
 
 /**
- * @classdesc
  * VectorTilesSource are object containing informations on how to fetch vector
  * tiles resources.
  *
@@ -56,7 +55,6 @@ class VectorTilesSource extends TMSSource {
      * Specification](https://docs.mapbox.com/mapbox-gl-js/style-spec/sources/)
      * for more informations.
      * @param {string} [source.accessToken] - Mapbox access token
-     * @constructor
      */
     constructor(source) {
         source.format = 'application/x-protobuf;type=mapbox-vector';
@@ -144,8 +142,8 @@ class VectorTilesSource extends TMSSource {
         });
     }
 
-    urlFromExtent(extent, url) {
-        return URLBuilder.xyz(extent, { tileMatrixCallback: this.tileMatrixCallback, url });
+    urlFromExtent(tile, url) {
+        return URLBuilder.xyz(tile, { tileMatrixCallback: this.tileMatrixCallback, url });
     }
 
     onLayerAdded(options) {

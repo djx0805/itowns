@@ -31,6 +31,7 @@ export const FEATURE_TYPES = {
 };
 
 /**
+ * @typedef {Object} FeatureBuildingOptions
  * @property {string} crs - The CRS to convert the input coordinates to.
  * @property {string} [structure='2d'] - data structure type : 2d or 3d.
  * If the structure is 3d, the feature have 3 dimensions by vertices positions and
@@ -47,8 +48,7 @@ export const FEATURE_TYPES = {
  * @property {Style} style - The style to inherit when creating
  * style for all new features.
  *
-*/
-export class FeatureBuildingOptions {}
+ */
 
 /**
  * @property {Extent} extent - The 2D extent containing all the points
@@ -329,8 +329,8 @@ const alignYtoEast = new THREE.Quaternion();
  * @property {boolean} isInverted - This option is to be set to the
  * correct value, true or false (default being false), if the computation of
  * the coordinates needs to be inverted to same scheme as OSM, Google Maps
- * or other system. See [this link]{@link
- * https://alastaira.wordpress.com/2011/07/06/converting-tms-tile-coordinates-to-googlebingosm-tile-coordinates}
+ * or other system. See [this link](
+ * https://alastaira.wordpress.com/2011/07/06/converting-tms-tile-coordinates-to-googlebingosm-tile-coordinates)
  * for more informations.
  * @property {THREE.Matrix4} matrixWorldInverse - The matrix world inverse.
  * @property {Coordinates} center - The local center coordinates in `EPSG:4326`.
@@ -432,7 +432,7 @@ export class FeatureCollection extends THREE.Object3D {
     }
 
     /**
-     * Remove features that don't have [FeatureGeometry]{@link FeatureGeometry}.
+     * Remove features that don't have {@link FeatureGeometry}.
      */
     removeEmptyFeature() {
         this.features = this.features.filter(feature => feature.geometries.length);

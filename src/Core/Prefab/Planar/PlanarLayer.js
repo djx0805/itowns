@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
 import TiledGeometryLayer from 'Layer/TiledGeometryLayer';
-import { globalExtentTMS } from 'Core/Geographic/Extent';
+import { globalExtentTMS } from 'Core/Tile/TileGrid';
 import CRS from 'Core/Geographic/Crs';
 import PlanarTileBuilder from './PlanarTileBuilder';
 
@@ -15,7 +15,6 @@ class PlanarLayer extends TiledGeometryLayer {
      * A {@link TiledGeometryLayer} to use with a {@link PlanarView}. It has
      * specific method for updating and subdivising its grid.
      *
-     * @constructor
      * @extends TiledGeometryLayer
      *
      * @param {string} id - The id of the layer, that should be unique. It is
@@ -32,8 +31,6 @@ class PlanarLayer extends TiledGeometryLayer {
      * name.
      * @param {number} [config.maxSubdivisionLevel=5] - Maximum subdivision
      * level for this tiled layer.
-     * @param {number} [config.maxDeltaElevationLevel=4] - Maximum delta between
-     * two elevations tile.
      *
      * @throws {Error} `object3d` must be a valid `THREE.Object3d`.
      */
@@ -50,7 +47,6 @@ class PlanarLayer extends TiledGeometryLayer {
         this.extent = extent;
         this.minSubdivisionLevel = this.minSubdivisionLevel == undefined ? 0 : this.minSubdivisionLevel;
         this.maxSubdivisionLevel = this.maxSubdivisionLevel == undefined ? 5 : this.maxSubdivisionLevel;
-        this.maxDeltaElevationLevel = this.maxDeltaElevationLevel || 4.0;
     }
 }
 
