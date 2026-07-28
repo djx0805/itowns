@@ -13,7 +13,9 @@ let style;
 
 const dim_ref = new THREE.Vector2();
 const dim = new THREE.Vector2();
+const zVect = new THREE.Vector3(0, 0, 1);
 const up = new THREE.Vector3();
+const right = new THREE.Vector3();
 const baseCoord = new THREE.Vector3();
 const topCoord = new THREE.Vector3();
 const inverseScale = new THREE.Vector3();
@@ -225,7 +227,7 @@ function featureToPoint(feature, options) {
     let featureId = 0;
     const vertices = new Float32Array(ptsIn);
     inverseScale.setFromMatrixScale(context.collection.matrixWorldInverse);
-    up.set(0, 0, 1).multiply(inverseScale);
+    up.copy(zVect).multiply(inverseScale);
 
     const pointMaterialSize = [];
 
@@ -346,7 +348,7 @@ function featureToLine(feature, options) {
         indexPtr: 0,
     };
     inverseScale.setFromMatrixScale(context.collection.matrixWorldInverse);
-    up.set(0, 0, 1).multiply(inverseScale);
+    up.copy(zVect).multiply(inverseScale);
     // Multi line case
     for (const geometry of feature.geometries) {
         context.setGeometry(geometry);
@@ -798,7 +800,7 @@ function featureToPolygon(feature, options) {
     const batchId = options.batchId || ((p, id) => id);
 
     inverseScale.setFromMatrixScale(context.collection.matrixWorldInverse);
-    up.set(0, 0, 1).multiply(inverseScale);
+    up.copy(zVect).multiply(inverseScale);
     let featureId = 0;
 
     for (const geometry of feature.geometries) {
@@ -1123,6 +1125,13 @@ function pointsToInstancedMeshes(feature) {
     const ptsIn = feature.vertices;
     const geometries = feature.geometries;
     const modelObject = style.model.object;
+
+    /* Orientation of the model following up and front properties. */
+    right.crossVectors(style.model.front, style.model.up);
+    mat.makeBasis(right, style.model.front, style.model.up).transpose();
+    modelObject.setRotationFromMatrix(mat);
+
+    /* Get the size of the object model once oriented. */
     bbox.setFromObject(modelObject);
     bbox.getSize(modelSize);
 
@@ -1137,7 +1146,7 @@ function pointsToInstancedMeshes(feature) {
         });
         return group;
     } else {
-        throw new Error('The format of the model object provided in the style (layer.style.point.model.object) is not supported. Only THREE.Mesh or THREE.Object3D are supported.');
+        throw new Error('The format of the model object provided in the style (layer.style.model.object) is not supported. Only THREE.Mesh or THREE.Object3D are supported.');
     }
 }
 
